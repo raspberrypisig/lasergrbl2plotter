@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Make LaserGRBL gcode to pen plotter</title>
+    <style>
+
+        body {
+            margin-top: 100px;
+            margin-left: 100px;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+        
+        .custom-file-upload {
+            border: 1px solid #ccc;
+            display: inline-block;
+            padding: 6px 12px;
+            cursor: pointer;
+        }
+
+        pre[class*=language-]:after, pre[class*=language-]:before  {
+            position: relative !important;
+        }
+
+    </style>
+<link href="prism.css" rel="stylesheet" />
+<script src="prism.js"></script>    
+</head>
+<body>
+ <label for="file-upload" class="custom-file-upload">
+     Click me to open LaserGRBL file
+</label>
+<input id="file-upload" type="file" accept=".nc, .gcode" onchange="showFile(this);"/>
+
+<p>
+    <div>
+        <pre>
+            <code id="lasergrbl_gcode">
+              
+            </code>
+        </pre>
+    </div>
+</p>
+
+<script>
+    function showFile(input) {
+  let file = input.files[0];
+  if (!file){
+    return;
+  }
+  console.log(file.name);
+  let reader = new FileReader();
+  reader.readAsText(file);
+  reader.onload = function() {
+    file_contents = reader.result;
+    document.querySelector("#lasergrbl_gcode").innerHTML = file_contents;
+    document.querySelector("#lasergrbl_gcode").classList.add("language-gcode");
+    document.querySelector("pre").classList.add("line-numbers");
+    Prism.highlightElement(document.querySelector("#lasergrbl_gcode"))
+    
+  };
+
+  reader.onerror = function() {
+    console.log(reader.error);
+  };
+}
+</script>
+
+</body>
+</html>
+
+
+
+
+
