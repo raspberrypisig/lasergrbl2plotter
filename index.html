@@ -66,6 +66,21 @@
 </p>
 
 <script>
+
+   function startw_with_m3(line) {
+      return line.startsWith("M3");
+   }
+
+   function startw_with_m5(line) {
+      return line.startsWith("M5");
+   }   
+
+   function starts_with_S(line) {      
+      const re = /^S[\d]+[\s]*$/;
+      const result = re.test(line);
+      return result;
+   }
+
     function showFile(input) {
   let file = input.files[0];
   if (!file){
@@ -75,10 +90,10 @@
   let reader = new FileReader();
   reader.readAsText(file);
   reader.onload = function() {
-    file_contents = reader.result;
-    lines = file_contents.split("\r\n");
-    laser_on_or_off_line_numbers = lines.reduce(function (line_numbers, currentValue, index) {
-       if (currentValue.startsWith("M3") || currentValue.startsWith("M5") ) {
+    const file_contents = reader.result;
+    const lines = file_contents.split("\r\n");
+    const laser_on_or_off_line_numbers = lines.reduce(function (line_numbers, currentValue, index) {
+       if (startw_with_m3(currentValue) || startw_with_m5(currentValue)  || starts_with_S(currentValue)) {
         line_numbers.push(index+1);
        }
        return line_numbers;
@@ -89,8 +104,7 @@
     document.querySelector("#lasergrbl_gcode").classList.add("language-gcode");
     
     document.querySelector("pre").classList.add("line-numbers");
-    document.querySelector("pre").setAttribute("data-line", laser_on_or_off_line_numbers.toString());
-    //document.querySelector("#lasergrbl_gcode").setAttribute("data-line", "1,2,3");
+    document.querySelector("pre").setAttribute("data-line", laser_on_or_off_line_numbers.toString());    
     Prism.highlightElement(document.querySelector("#lasergrbl_gcode"));
     
   };
