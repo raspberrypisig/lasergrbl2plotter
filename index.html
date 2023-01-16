@@ -23,13 +23,28 @@
             cursor: pointer;
         }
 
+        /*
+        .line-highlight {
+            background-color: green !important;
+        }
+*/
+
+       /*
+        
         pre[class*=language-]:after, pre[class*=language-]:before  {
             position: relative !important;
         }
+        */
+        
 
     </style>
 <link href="prism.css" rel="stylesheet" />
-<script src="prism.js"></script>    
+<link href="prism-coy.css" rel="stylesheet" />
+<link href="prism-line-highlight.css" rel="stylesheet" />
+<link href="prism-line-numbers.css" rel="stylesheet" />
+<script src="prism.js"></script>  
+<script src="prism-line-numbers.min.js"></script>  
+<script src="prism-line-highlight.min.js"></script>    
 </head>
 <body>
  <label for="file-upload" class="custom-file-upload">
@@ -40,8 +55,7 @@
 <p>
     <div>
         <pre>
-            <code id="lasergrbl_gcode">
-              
+            <code id="lasergrbl_gcode">              
             </code>
         </pre>
 
@@ -66,10 +80,22 @@
   reader.readAsText(file);
   reader.onload = function() {
     file_contents = reader.result;
+    lines = file_contents.split("\r\n");
+    laser_on_or_off_line_numbers = lines.reduce(function (line_numbers, currentValue, index) {
+       if (currentValue.startsWith("M3") || currentValue.startsWith("M5") ) {
+        line_numbers.push(index+1);
+       }
+       return line_numbers;
+    }, []);
+    console.log(laser_on_or_off_line_numbers);
+  
     document.querySelector("#lasergrbl_gcode").innerHTML = file_contents;
     document.querySelector("#lasergrbl_gcode").classList.add("language-gcode");
+    
     document.querySelector("pre").classList.add("line-numbers");
-    Prism.highlightElement(document.querySelector("#lasergrbl_gcode"))
+    document.querySelector("pre").setAttribute("data-line", laser_on_or_off_line_numbers.toString());
+    //document.querySelector("#lasergrbl_gcode").setAttribute("data-line", "1,2,3");
+    Prism.highlightElement(document.querySelector("#lasergrbl_gcode"));
     
   };
 
