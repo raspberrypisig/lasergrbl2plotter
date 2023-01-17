@@ -22,10 +22,6 @@
             padding: 6px 12px;
             cursor: pointer;
         }
-
-
-
-       
         
         pre[class*=language-]:after, pre[class*=language-]:before  {
             position: relative !important;
@@ -105,9 +101,13 @@
 5.00
     </textarea>
     <p></p>
-    <button>
-        Convert!
+    <button id="convertButton">
+        Convert
     </button>
+        <a id="download" style="display: none;" href="" download="saved.nc">
+        Convert!
+        </a>
+
     <p></p>
     </div>
 </div>
@@ -117,6 +117,16 @@
 </div>
 
 <script>
+
+   document.addEventListener("DOMContentLoaded", function() {
+      document.querySelector("#convertButton").addEventListener("click", function(ev) {      
+        
+        const newblob = new Blob([window.file_contents]);
+        const url = URL.createObjectURL(newblob);
+        document.querySelector("#download").setAttribute("href", url);
+        document.querySelector("#download").click();
+      })
+   })
 
    function startw_with_m3(line) {
       return line.startsWith("M3");
