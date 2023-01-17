@@ -30,14 +30,22 @@
         pre[class*=language-]:after, pre[class*=language-]:before  {
             position: relative !important;
         }
-        
+/*
+        pre[class*=language-] > code {
+            overflow: scroll;
+            max-height: 28em;
+            display: block;
+        }
+ */       
         #footer-convert {
             display: none;    
         }
 
         textarea {
             width: 100%;
-            height: 150px;
+            /*height: 150px;*/
+            overflow: hidden;
+            height: 60px;
             padding: 12px 20px;
             box-sizing: border-box;
             border: 2px solid #ccc;
@@ -82,36 +90,26 @@
 
 </p>
 <div id="footer-convert">
-<h1 id="params">Convert LaserGRBL gcode(marlin) to pen plotter gcode</h1>
-<div>
-    <h3>Start Gcode</h3>
-    <textarea>
-G21
-G91 G0 F300.0 Z0.000; pen park !!Zsafe
-G90; absolute
-G28 X; home
-G28 Y; home
-G28 Z; home
-    </textarea>
-    <h3>End Gcode</h3>
-    <textarea>
-G28
-G92
-    </textarea>    
-    <h3>Pen Up Gcode</h3>
-    <textarea>
-G00 F300.0 Z16.000; pen up       
-    </textarea>    
-    <h3>Pen Down Gcode</h3>
-    <textarea>
-G00 F300.0 Z11.000; pen down
-    </textarea>    
+    <h1 id="params">Convert LaserGRBL gcode(marlin) to pen plotter gcode</h1>
+    <div>      
     <h3>Z-Axis Work Offset</h3>
-
-    <h3>Travel Speed</h3>
-
-    <h3>Plotting Speed</h3>
-</div>
+    <textarea>
+11.00
+    </textarea>
+    <h3>Lift z-height(for pen movement)</h3>
+    <textarea>
+5.00
+    </textarea>
+    <h3>Park z-height(for safe parking)</h3>
+    <textarea>
+5.00
+    </textarea>
+    <p></p>
+    <button>
+        Convert!
+    </button>
+    <p></p>
+    </div>
 </div>
 
 <div id="convertedfile">
@@ -144,6 +142,7 @@ G00 F300.0 Z11.000; pen down
   reader.readAsText(file);
   reader.onload = function() {
     const file_contents = reader.result;
+    window.file_contents = file_contents;
     const lines = file_contents.split("\r\n");
     const laser_on_or_off_line_numbers = lines.reduce(function (line_numbers, currentValue, index) {
        if (startw_with_m3(currentValue) || startw_with_m5(currentValue)  || starts_with_S(currentValue)) {
@@ -165,7 +164,8 @@ G00 F300.0 Z11.000; pen down
   reader.onerror = function() {
     console.log(reader.error);
   };
-}
+  }
+
 </script>
 
 </body>
