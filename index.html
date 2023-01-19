@@ -37,6 +37,10 @@
             display: none;    
         }
 
+        code, kbd, pre {
+            background-color: white !important;
+        }
+
         textarea {
             width: 100%;
             /*height: 150px;*/
@@ -51,23 +55,32 @@
             resize: none;
         }
 
+        #loading {
+            display: none;
+        }
+
     </style>
 <link href="prism.css" rel="stylesheet" />
 <link href="prism-coy.css" rel="stylesheet" />
 <link href="prism-line-highlight.css" rel="stylesheet" />
 <link href="prism-line-numbers.css" rel="stylesheet" />
+<link href="pico.classless.min.css" rel="stylesheet" />
 <script src="prism.js"></script>  
 <script src="prism-line-numbers.min.js"></script>  
 <script src="prism-line-highlight.min.js"></script>    
 </head>
 <body>
+ <main>
  <label for="file-upload" class="custom-file-upload">
-     Click me to open LaserGRBL file
+     Click me to open laser gcode file
 </label>
+</main>
 <input id="file-upload" type="file" accept=".nc, .gcode" onchange="showFile(this);"/>
 
-<p>
-</p>
+    <div id="loading">
+        <button aria-busy="true">Please wait</button>
+    </div>
+
     <div>
         <pre>
             <code id="lasergrbl_gcode">              
@@ -89,17 +102,12 @@
     <h1 id="params">Convert LaserGRBL gcode(marlin) to pen plotter gcode</h1>
     <div>      
     <h3>Z-Axis Work Offset</h3>
-    <textarea>
-11.00
-    </textarea>
+    <input type="text" value="11.00"/>
     <h3>Lift z-height(for pen movement)</h3>
-    <textarea>
-5.00
-    </textarea>
+    <input type="text" value="5.00"/>
     <h3>Park z-height(for safe parking)</h3>
-    <textarea>
-5.00
-    </textarea>
+    <input type="text" value="5.00"/>
+    
     <p></p>
     <button id="convertButton">
         Convert
@@ -150,18 +158,21 @@
   console.log(file.name);
   let reader = new FileReader();
   reader.readAsText(file);
-  reader.onload = function() {
-    const file_contents = reader.result;
-    window.file_contents = file_contents;
-    const lines = file_contents.split("\r\n");
-    const laser_on_or_off_line_numbers = lines.reduce(function (line_numbers, currentValue, index) {
-       if (startw_with_m3(currentValue) || startw_with_m5(currentValue)  || starts_with_S(currentValue)) {
-        line_numbers.push(index+1);
-       }
-       return line_numbers;
+  reader.onload = function() {    
+    setTimeout(function() {
+        document.querySelector("#loading").style.display = "block";
+    }, 0);
+    setTimeout(function() {
+        const file_contents = reader.result;
+        window.file_contents = file_contents;
+        const lines = file_contents.split("\r\n");
+        const laser_on_or_off_line_numbers = lines.reduce(function (line_numbers, currentValue, index) {
+        if (startw_with_m3(currentValue) || startw_with_m5(currentValue)  || starts_with_S(currentValue)) {
+            line_numbers.push(index+1);
+        }
+        return line_numbers;
     }, []);
-    console.log(laser_on_or_off_line_numbers);
-  
+
     document.querySelector("#lasergrbl_gcode").innerHTML = file_contents;
     document.querySelector("#lasergrbl_gcode").classList.add("language-gcode");
     
@@ -169,6 +180,8 @@
     document.querySelector("pre").setAttribute("data-line", laser_on_or_off_line_numbers.toString());    
     Prism.highlightElement(document.querySelector("#lasergrbl_gcode"));
     document.querySelector("#footer-convert").style.display = "block";
+    document.querySelector("#loading").style.display = "none";
+    }, 100);
   };
 
   reader.onerror = function() {
